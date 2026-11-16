@@ -1,0 +1,4 @@
+﻿deposit_type,False Negative (FN - Bỏ sót hủy),False Positive (FP - Báo động giả),True Negative (TN),True Positive (TP)
+No Deposit,8.83,7.68,63.77,19.71
+Non Refund,0.1,0.0,0.7,99.2
+Refundable,3.45,0.0,79.31,17.24

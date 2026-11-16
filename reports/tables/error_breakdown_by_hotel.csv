@@ -1,0 +1,3 @@
+﻿hotel,False Negative (FN - Bỏ sót hủy),False Positive (FP - Báo động giả),True Negative (TN),True Positive (TP)
+City Hotel,8.94,6.84,50.75,33.47
+Resort Hotel,5.52,6.57,66.79,21.12

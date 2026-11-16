@@ -1,0 +1,126 @@
+\chapter{THIẾT KẾ GIẢI PHÁP VÀ QUY TRÌNH HỌC MÁY}
+
+\section{Sơ đồ quy trình học máy tổng quát}
+Quy trình xây dựng mô hình học máy trong dự án tuân theo tiêu chuẩn công nghiệp:
+\begin{enumerate}
+    \item \textbf{Data Ingestion \& Validation:} Nạp dữ liệu từ CSV, kiểm tra schema và loại trừ các cột rò rỉ.
+    \item \textbf{Train/Test Splitting:} Phân chia dữ liệu có bảo toàn tỷ lệ nhãn (Stratified Split).
+    \item \textbf{Preprocessing Pipelines:} Đóng gói các biến đổi dữ liệu bên trong \texttt{ColumnTransformer}.
+    \item \textbf{Model Training \& Tuning:} Huấn luyện mô hình và đánh giá chéo 5-fold trên tập Train.
+    \item \textbf{Independent Evaluation:} Kiểm thử mô hình trên tập Test độc lập.
+    \item \textbf{Diagnostic Error Analysis:} Phân tích các trường hợp dự đoán sai để rút ra giải pháp nghiệp vụ.
+\end{enumerate}
+
+\section{Phương pháp chia dữ liệu}
+Để phản ánh chính xác hiệu năng mô hình trên dữ liệu chưa từng biết:
+\begin{itemize}
+    \item Dữ liệu được chia theo tỷ lệ: \textbf{80\% Train} (95,512 mẫu) và \textbf{20\% Test} (23,878 mẫu).
+    \item Sử dụng \texttt{stratify=y} để tỷ lệ hủy phòng ở cả hai tập đạt đúng $37.04\%$.
+    \item Cố định \texttt{random\_state = 42} để đảm bảo tính tái lập (Reproducibility).
+    \item Tập Test được cách ly hoàn toàn và chỉ sử dụng ở khâu đánh giá cuối cùng.
+\end{itemize}
+
+\section{Xử lý dữ liệu thiếu}
+\begin{itemize}
+    \item \textbf{Biến số:} Sử dụng \texttt{SimpleImputer(strategy='median')}. Trung vị (Median) được lựa chọn do các biến số (như \texttt{children}) có phân phối lệch phải mạnh, không bị ảnh hưởng bởi ngoại lệ như giá trị trung bình (Mean).
+    \item \textbf{Biến phân loại:} 
+    \begin{itemize}
+        \item Trong Pipeline A: Điền giá trị xuất hiện nhiều nhất (\texttt{most\_frequent}).
+        \item Trong Pipeline B: Điền nhãn chuyên biệt \texttt{'Unknown'} để giữ lại thông tin về sự thiếu hụt.
+    \end{itemize}
+\end{itemize}
+
+\section{Mã hóa dữ liệu phân loại}
+Do các mô hình học máy yêu cầu đầu vào dạng số, các biến định danh được chuyển đổi qua One-Hot Encoding:
+\begin{itemize}
+    \item Thiết lập \texttt{handle\_unknown='ignore'} để tránh lỗi khi tập kiểm thử xuất hiện các nhãn mới.
+    \item Trong Pipeline B: Thiết lập ngưỡng \texttt{min\_frequency=0.01} để gộp các quốc gia hoặc danh mục có tần suất dưới 1\% vào nhóm \texttt{'infrequent'}, tránh bùng nổ số chiều không gian đặc trưng.
+\end{itemize}
+
+\section{Chuẩn hóa dữ liệu số}
+Thuật toán K-Nearest Neighbors (KNN) tính toán khoảng cách hình học giữa các vector dữ liệu, do đó các đặc trưng có độ lớn lớn (như \texttt{lead\_time} lên đến hàng trăm ngày) sẽ lấn át hoàn toàn các đặc trưng có độ lớn nhỏ (như số lượng trẻ em).
+\begin{itemize}
+    \item Pipeline A: Áp dụng \texttt{StandardScaler} đưa dữ liệu về phân phối chuẩn $z = \frac{x - \mu}{\sigma}$.
+    \item Pipeline B: Áp dụng \texttt{RobustScaler} sử dụng trung vị và khoảng tứ phân vị (IQR) để chống lại ảnh hưởng của các ngoại lệ cực đoan trong \texttt{adr} và \texttt{lead\_time}.
+\end{itemize}
+Đối với Decision Tree, do thuật toán phân tách dựa trên các ngưỡng trực giao từng chiều độc lập, bước chuẩn hóa này không làm thay đổi cấu trúc cây.
+
+\section{Xử lý Data Leakage}
+Để ngăn chặn hoàn toàn rò rỉ dữ liệu:
+\begin{enumerate}
+    \item Loại bỏ \texttt{reservation\_status} và \texttt{reservation\_status\_date} ngay sau khi đọc dữ liệu thô.
+    \item Toàn bộ các bộ biến đổi (\texttt{Imputer}, \texttt{Scaler}, \texttt{Encoder}) đều được đặt bên trong \texttt{Pipeline}. Phương thức \texttt{.fit()} chỉ được gọi trên tập Train; tập Test chỉ được biến đổi bằng phương thức \texttt{.transform()}.
+\end{enumerate}
+
+\section{Pipeline A (Baseline Preprocessing)}
+Pipeline A đại diện cho quy trình tiền xử lý tiêu chuẩn, đơn giản:
+\begin{itemize}
+    \item Biến số: Imputer (Median) $\rightarrow$ StandardScaler (nếu dùng KNN).
+    \item Biến phân loại: Imputer (Most Frequent) $\rightarrow$ OneHotEncoder.
+    \item Không tạo thêm đặc trưng phái sinh.
+\end{itemize}
+
+\section{Pipeline B (Improved Preprocessing \& Feature Engineering)}
+Pipeline B tích hợp các cải tiến kỹ thuật đặc trưng và kiểm soát số chiều:
+\begin{itemize}
+    \item Bước biến đổi đặc trưng \texttt{HotelFeatureEngineer}: Tự động sinh các biến nghiệp vụ.
+    \item Biến số: Imputer (Median) $\rightarrow$ RobustScaler.
+    \item Biến phân loại: Imputer (Constant='Unknown') $\rightarrow$ OneHotEncoder gom nhóm hiếm (\texttt{min\_frequency=0.01}).
+\end{itemize}
+
+\section{Kỹ thuật đặc trưng (Feature Engineering)}
+Các đặc trưng mới được xây dựng dựa trên lập luận nghiệp vụ:
+\begin{enumerate}
+    \item \texttt{total\_nights = stays\_in\_weekend\_nights + stays\_in\_week\_nights}: Tổng thời gian lưu trú.
+    \item \texttt{total\_guests = adults + children + babies}: Tổng quy mô đoàn khách.
+    \item \texttt{is\_family = ((children > 0) | (babies > 0))}: Nhận diện khách hàng gia đình có trẻ em.
+    \item \texttt{room\_type\_changed = (reserved\_room\_type != assigned\_room\_type)}: Cờ nhị phân chỉ ra việc khách sạn đổi loại phòng khi nhận phòng.
+    \item \texttt{has\_special\_requests = (total\_of\_special\_requests > 0)}: Cờ nhị phân biểu thị khách có quan tâm đặc biệt đến dịch vụ hay không.
+    \item \texttt{lead\_time\_log = \log(1 + lead\_time)}: Giảm độ lệch phải cho thời gian đặt trước.
+\end{enumerate}
+
+\section{Giới thiệu thuật toán KNN}
+K-Nearest Neighbors là thuật toán học dựa trên mẫu (Instance-based Learning):
+\begin{itemize}
+    \item Khi nhận mẫu mới $\mathbf{x}^*$, thuật toán tìm $k$ láng giềng gần nhất theo khoảng cách Minkowski ($p=2$ là khoảng cách Euclid):
+    \begin{equation}
+        d(\mathbf{x}_i, \mathbf{x}_j) = \sqrt{\sum_{m=1}^d (x_{im} - x_{jm})^2}
+    \end{equation}
+    \item Dự đoán nhãn dựa trên bầu chọn có trọng số khoảng cách (\texttt{weights='distance'}): Các điểm càng gần có trọng số bầu chọn càng cao.
+\end{itemize}
+
+\section{Giới thiệu thuật toán Decision Tree}
+Cây quyết định phân chia không gian đặc trưng một cách đệ quy:
+\begin{itemize}
+    \item \textbf{Độ vẩn đục Gini (Gini Impurity):}
+    \begin{equation}
+        I_G(t) = 1 - \sum_{c=0}^1 p(c|t)^2
+    \end{equation}
+    \item \textbf{Độ hỗn loạn Entropy:}
+    \begin{equation}
+        H(t) = -\sum_{c=0}^1 p(c|t) \log_2 p(c|t)
+    \end{equation}
+    \item Áp dụng kỹ thuật cắt tỉa cây (Pruning) thông qua giới hạn độ sâu \texttt{max\_depth}, \texttt{min\_samples_split} và \texttt{min\_samples_leaf} để hạn chế hiện tượng học vẹt (Overfitting).
+\end{itemize}
+
+\section{Giới thiệu Baseline Model}
+Sử dụng \texttt{DummyClassifier(strategy='most_frequent')}. Mô hình này luôn luôn dự đoán nhãn chiếm đa số trong tập huấn luyện (Lớp 0: Không hủy). Baseline này phản ánh xác suất tiên nghiệm của tập dữ liệu và đóng vai trò là mốc chuẩn tối thiểu bắt buộc các mô hình học máy phải vượt qua.
+
+\section{Các tham số sử dụng}
+\begin{table}[H]
+    \centering
+    \caption{Cấu hình tham số của các mô hình thực nghiệm}
+    \label{tab:model_params}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Mô hình} & \textbf{Pipeline} & \textbf{Tham số thiết lập} \\
+        \midrule
+        EXP01: Dummy & Baseline & strategy='most\_frequent' \\
+        EXP02: KNN & Pipeline A & k=7, weights='distance', metric='minkowski', scaler=Standard \\
+        EXP03: Decision Tree & Pipeline A & criterion='gini', max\_depth=10, min\_samples\_split=10, min\_leaf=5 \\
+        EXP04: KNN & Pipeline B & k=7, weights='distance', scaler=Robust, gom nhóm danh mục \\
+        EXP05: Decision Tree & Pipeline B & criterion='gini', max\_depth=12, class\_weight='balanced', min\_leaf=5 \\
+        EXP06: DT Optimized & Pipeline B & criterion='entropy', max\_depth=15, min\_samples\_split=8, min\_leaf=4 \\
+        \bottomrule
+    \end{tabular}
+\end{table}

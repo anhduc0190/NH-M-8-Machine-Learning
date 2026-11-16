@@ -1,0 +1,8 @@
+﻿market_segment,False Negative (FN - Bỏ sót hủy),False Positive (FP - Báo động giả),True Negative (TN),True Positive (TP)
+Aviation,17.78,2.22,77.78,2.22
+Complementary,7.86,7.14,82.14,2.86
+Corporate,6.54,2.8,78.43,12.23
+Direct,10.04,3.92,80.87,5.17
+Groups,1.83,1.93,37.0,59.24
+Offline TA/TO,2.23,4.72,60.8,32.25
+Online TA,11.76,10.33,52.58,25.33

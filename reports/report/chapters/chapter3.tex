@@ -1,0 +1,76 @@
+\chapter{PHÂN TÍCH MÃ NGUỒN VÀ CHỨC NĂNG}
+
+\section{Môi trường phát triển}
+Dự án được xây dựng và kiểm thử hoàn chỉnh trên hệ điều hành Windows với môi trường Python 3.14 (Anaconda Distribution). Dự án sử dụng Visual Studio Code kết hợp Antigravity IDE, hỗ trợ quản lý mã nguồn qua Git và môi trường kiểm thử tự động \texttt{pytest}.
+
+\section{Ngôn ngữ và thư viện sử dụng}
+\begin{itemize}
+    \item \textbf{Ngôn ngữ lập trình:} Python 3.14.
+    \item \textbf{Xử lý dữ liệu bảng:} \texttt{pandas 2.3.3}, \texttt{numpy 2.4.6}.
+    \item \textbf{Học máy \& Tiền xử lý:} \texttt{scikit-learn 1.9.0}, \texttt{joblib 1.5.3}.
+    \item \textbf{Trực quan hóa đồ họa:} \texttt{matplotlib 3.11.0}, \texttt{seaborn 0.13.2}.
+    \item \textbf{Kiểm thử mã nguồn:} \texttt{pytest 8.4.2}.
+\end{itemize}
+
+\section{Cấu trúc chương trình}
+Chương trình được thiết kế theo kiến trúc module hóa hướng đối tượng, tuân thủ nghiêm ngặt nguyên tắc Single Responsibility và chuẩn PEP 8. Toàn bộ mã nguồn cốt lõi nằm trong thư mục \texttt{src/}:
+\begin{itemize}
+    \item \texttt{src/config.py}: Quản lý tập trung các hằng số, đường dẫn tệp tin và không gian siêu tham số.
+    \item \texttt{src/data\_loader.py}: Chịu trách nhiệm nạp dữ liệu, kiểm tra tệp và phân tách dữ liệu an toàn.
+    \item \texttt{src/data\_validation.py}: Kiểm định cấu trúc, schema và phát hiện dị thường của bộ dữ liệu thô.
+    \item \texttt{src/feature\_engineering.py}: Lớp biến đổi đặc trưng \texttt{HotelFeatureEngineer} kế thừa \texttt{BaseEstimator} và \texttt{TransformerMixin}.
+    \item \texttt{src/preprocessing.py}: Xây dựng các \texttt{ColumnTransformer} và đóng gói toàn bộ Pipeline A và B.
+    \item \texttt{src/train.py}: Điều phối huấn luyện và kiểm định chéo (5-fold Cross-Validation).
+    \item \texttt{src/evaluate.py}: Đánh giá khách quan trên tập kiểm thử độc lập và trực quan hóa các đường cong hiệu năng.
+    \item \texttt{src/error\_analysis.py}: Chẩn đoán chuyên sâu các ca phân loại sai (False Positive, False Negative).
+    \item \texttt{src/utils.py}: Tiện ích lưu trữ hình ảnh và bảng biểu.
+    \item \texttt{main.py}: Điểm điều khiển dòng lệnh (CLI Interface) của toàn bộ dự án.
+\end{itemize}
+
+\section{Chức năng từng module}
+Mỗi module đều có tài liệu hướng dẫn (docstring), kiểu dữ liệu (type hinting) rõ ràng và có thể hoạt động độc lập hoặc tích hợp trong quy trình tự động.
+
+\section{Quy trình đọc và xử lý dữ liệu}
+Module \texttt{data\_loader.py} thực thi quy trình phân tách chống rò rỉ dữ liệu:
+\begin{lstlisting}[language=Python]
+def load_features_and_target(filepath=None, drop_leakage=True):
+    df = load_raw_data(filepath=filepath)
+    y = df[TARGET_COLUMN].copy()
+    X = df.drop(columns=[TARGET_COLUMN]).copy()
+    
+    # Loai bo cac bien gay ro ri thong tin tuong lai
+    if drop_leakage:
+        cols_to_drop = [c for c in LEAKAGE_COLUMNS if c in X.columns]
+        X = X.drop(columns=cols_to_drop)
+    return X, y
+\end{lstlisting}
+
+\section{Quy trình xây dựng Pipeline}
+Các bộ tiền xử lý được đóng gói trong Scikit-Learn \texttt{ColumnTransformer} đảm bảo tính độc lập:
+\begin{lstlisting}[language=Python]
+def get_pipeline_a_preprocessor(scale_numeric=True):
+    num_steps = [("imputer", SimpleImputer(strategy="median"))]
+    if scale_numeric:
+        num_steps.append(("scaler", StandardScaler()))
+    num_pipe = Pipeline(steps=num_steps)
+
+    cat_pipe = Pipeline(steps=[
+        ("imputer", SimpleImputer(strategy="most_frequent")),
+        ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False))
+    ])
+    return ColumnTransformer(transformers=[
+        ("num", num_pipe, NUMERICAL_FEATURES_BASE),
+        ("cat", cat_pipe, CATEGORICAL_FEATURES_BASE)
+    ])
+\end{lstlisting}
+
+\section{Quy trình huấn luyện}
+Module \texttt{train.py} thực hiện vòng lặp kiểm tra chéo 5-fold trên tập Train nhằm đảm bảo mô hình không quá khớp trước khi đánh giá trên tập Test:
+\begin{lstlisting}[language=Python]
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+scoring = ["accuracy", "precision", "recall", "f1", "roc_auc"]
+cv_res = cross_validate(pipeline, X_train, y_train, cv=skf, scoring=scoring)
+\end{lstlisting}
+
+\section{Quy trình đánh giá}
+Module \texttt{evaluate.py} nạp tập kiểm thử độc lập từ tệp cache, tính toán ma trận nhầm lẫn và các chỉ số đo lường, sau đó xuất bảng số liệu định dạng CSV và biểu đồ đồ họa độ phân giải cao (300 DPI) vào thư mục \texttt{reports/}.

@@ -1,0 +1,33 @@
+\chapter{TỔNG KẾT VÀ HƯỚNG PHÁT TRIỂN}
+
+\section{Tổng kết kết quả}
+Dự án nghiên cứu đề tài 14 \textbf{``Dự đoán khách hàng hủy đặt phòng khách sạn''} đã hoàn thành toàn diện toàn bộ các mục tiêu đặt ra:
+\begin{enumerate}
+    \item Đã xây dựng quy trình phân tích và khai phá dữ liệu (EDA) chuẩn mực trên bộ dữ liệu \textit{Hotel Booking Demand} gồm 119,390 dòng quan sát, nhận diện các thuộc tính rủi ro hàng đầu (\texttt{lead\_time}, \texttt{deposit\_type}, \texttt{hotel}, \texttt{special\_requests}).
+    \item Đã thiết kế thành công hai luồng tiền xử lý (Pipeline A và Pipeline B), thiết lập cơ chế kiểm soát chống rò rỉ dữ liệu (No Data Leakage) ở mức độ tuyệt đối.
+    \item Đã tiến hành thử nghiệm, kiểm định chéo và đánh giá độc lập 6 mô hình học máy: Baseline (DummyClassifier), K-Nearest Neighbors (KNN) và Decision Tree.
+    \item Đạt kết quả thực nghiệm tối ưu với mô hình Decision Tree trên Pipeline B: \textbf{Accuracy đạt 85.48\%, F1-Score đạt 80.12\% và ROC-AUC đạt 0.9289} trên tập kiểm thử độc lập 23,878 mẫu.
+    \item Đã tiến hành chẩn đoán chuyên sâu các trường hợp lỗi False Positive và False Negative, giải thích tường minh cơ chế phát sinh lỗi dưới góc độ nghiệp vụ lưu trú.
+\end{enumerate}
+
+\section{Những nội dung đã hoàn thành}
+\begin{itemize}
+    \item Toàn bộ mã nguồn được module hóa hướng đối tượng chuẩn PEP 8 trong thư mục \texttt{src/}.
+    \item Xây dựng hệ thống 5 Jupyter Notebooks có thể tái lập từ đầu đến cuối trong thư mục \texttt{notebooks/}.
+    \item Bộ kiểm thử tự động (\texttt{pytest}) đạt tỷ lệ thành công 100\% (13/13 test cases passed).
+    \item Xuất bản đầy đủ bảng biểu và đồ thị phân tích chất lượng cao vào thư mục \texttt{reports/}.
+    \item Soạn thảo hoàn chỉnh báo cáo khoa học 6 chương bằng LaTeX và tài liệu thuyết minh dự án (\texttt{README.md}, \texttt{AI\_USAGE.md}, \texttt{docs/}).
+\end{itemize}
+
+\section{Hạn chế của nghiên cứu}
+\begin{itemize}
+    \item Nghiên cứu mới chỉ tập trung vào các thuật toán nền tảng trong chương trình học (KNN, Decision Tree), chưa triển khai các mô hình Ensemble học sâu (như Random Forest, Gradient Boosting).
+    \item Mô hình chưa có dữ liệu phản hồi thời gian thực từ phía khách hàng (ví dụ: hành vi mở email xác nhận, lịch sử tương tác trên ứng dụng).
+\end{itemize}
+
+\section{Hướng phát triển trong tương lai}
+\begin{enumerate}
+    \item \textbf{Thử nghiệm các mô hình Ensemble:} Mở rộng thử nghiệm Random Forest, Extra Trees hoặc XGBoost để nâng cao hơn nữa chỉ số F1-Score.
+    \item \textbf{Hiệu chỉnh xác suất (Probability Calibration):} Sử dụng Platt Scaling hoặc Isotonic Regression để biến đổi đầu ra của mô hình thành xác suất rủi ro được hiệu chuẩn chính xác, phục vụ tính toán giá trị kỳ vọng (Expected Monetary Value) trong tối ưu hóa doanh thu khách sạn.
+    \item \textbf{Triển khai ứng dụng Web tương tác:} Hoàn thiện giao diện Streamlit cho phép nhân viên lễ tân nhập thông tin đặt phòng và nhận dự báo rủi ro hủy phòng tức thì.
+\end{enumerate}

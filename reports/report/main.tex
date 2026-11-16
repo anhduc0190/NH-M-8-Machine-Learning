@@ -1,0 +1,115 @@
+\documentclass[12pt,a4paper]{report}
+
+% ==============================================================================
+% GÓI VÀ ĐỊNH DẠNG TÀI LIỆU (PACKAGES & FORMATTING)
+% ==============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\setstretch{1.3}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!80!black,
+    citecolor=green!60!black,
+    urlcolor=blue!90!black
+}
+
+\graphicspath{{../figures/}}
+
+% Thiết lập header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Đề tài 14: Dự đoán khách hàng hủy đặt phòng khách sạn}
+\fancyhead[R]{\small Nhập môn Học máy (2026--2027)}
+\fancyfoot[C]{\thepage}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    breaklines=true,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red!70!black}
+}
+
+% ==============================================================================
+% PHẦN MỞ ĐẦU (TITLE & PREAMBLE)
+% ==============================================================================
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\Large\bfseries BỘ GIÁO DỤC VÀ ĐÀO TẠO}\\[0.5cm]
+    {\large\bfseries TRƯỜNG ĐẠI HỌC CÔNG NGHỆ}\\[2cm]
+    
+    {\Huge\bfseries BÁO CÁO BÀI TẬP LỚN}\\[0.5cm]
+    {\Large\bfseries HỌC PHẦN: NHẬP MÔN HỌC MÁY}\\[0.3cm]
+    {\large Năm học: 2026 -- 2027}\\[2cm]
+    
+    \fbox{
+        \parbox{0.9\textwidth}{
+            \centering\vspace{0.5cm}
+            {\LARGE\bfseries ĐỀ TÀI 14}\\[0.3cm]
+            {\Large\bfseries DỰ ĐOÁN KHÁCH HÀNG HỦY ĐẶT PHÒNG KHÁCH SẠN}\\[0.2cm]
+            {\large\textit{(Hotel Booking Cancellation Prediction)}}\vspace{0.5cm}
+        }
+    }\\[2.5cm]
+    
+    \begin{flushleft}
+        \large
+        \textbf{Nhóm sinh viên thực hiện:} Nhóm 3 thành viên\\
+        \textbf{1.} Thành viên 1 -- \textit{Phụ trách Khám phá dữ liệu (EDA)}\\
+        \textbf{2.} Thành viên 2 -- \textit{Phụ trách Tiền xử lý \& Huấn luyện mô hình}\\
+        \textbf{3.} Thành viên 3 -- \textit{Phụ trách Đánh giá, Phân tích lỗi \& Báo cáo}\\[0.8cm]
+        \textbf{Giảng viên hướng dẫn:} Giảng viên phụ trách môn học
+    \end{flushleft}
+    
+    \vfill
+    {\large Hà Nội, Năm 2026}
+\end{titlepage}
+
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+
+\pagenumbering{arabic}
+
+% ==============================================================================
+% CÁC CHƯƠNG NỘI DUNG (CHAPTERS)
+% ==============================================================================
+\input{chapters/chapter1.tex}
+\input{chapters/chapter2.tex}
+\input{chapters/chapter3.tex}
+\input{chapters/chapter4.tex}
+\input{chapters/chapter5.tex}
+\input{chapters/chapter6.tex}
+\input{chapters/ai_declaration.tex}
+
+% ==============================================================================
+% TÀI LIỆU THAM KHẢO
+% ==============================================================================
+\newpage
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
