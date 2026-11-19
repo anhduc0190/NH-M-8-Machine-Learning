@@ -231,3 +231,45 @@ Chi tiết bảng phân bổ ma trận trách nhiệm RACI và tiến độ đư
 ## 18. KHAI BÁO SỬ DỤNG AI (ACADEMIC INTEGRITY)
 Dự án có sử dụng Google Antigravity IDE (Gemini Models) để hỗ trợ khởi tạo cấu trúc khung dự án, refactoring mã nguồn và định dạng mẫu báo cáo LaTeX. 100% dữ liệu, kết quả thực nghiệm và nhận định khoa học được thực hiện trên dữ liệu thật. Chi tiết xem tại:
 [AI_USAGE.md](file:///d:/NH-M-8-Machine-Learning/AI_USAGE.md)
+
+
+---
+
+## 19. HỆ THỐNG WEBSITE DEMO: HOTEL ANALYTICS & CANCELLATION PREDICTION
+
+Dự án phát triển một ứng dụng web full-stack hoàn chỉnh nhằm trực quan hóa dữ liệu và trình diễn khả năng ứng dụng thực tế của các mô hình Machine Learning:
+
+### 🌟 Kiến trúc công nghệ
+- **Frontend:** React 19 + Vite, Tailwind CSS v4, Recharts, Lucide Icons.
+- **Backend:** Python FastAPI RESTful API, Scikit-learn, Joblib.
+- **Dữ liệu & Mô hình:** Sử dụng 100% dữ liệu thật và các pipeline mô hình `joblib` đã huấn luyện (Pipeline A, Pipeline B, EXP01 - EXP06).
+
+### 📑 6 Trang Chức Năng Chính
+1. **Dashboard:** KPI kinh doanh (119,390 booking, tỷ lệ hủy 37.04%), so sánh City Hotel vs Resort Hotel, biểu đồ Lead Time, Market Segment, Deposit Type.
+2. **Prediction (Dự đoán đơn lẻ):** Form nhập 20+ tham số đặt phòng, chọn mô hình (KNN / Decision Tree), hiển thị xác suất hủy, thanh đo rủi ro và các yếu tố rủi ro chính.
+3. **Batch Prediction:** Kéo thả tệp CSV, tự động loại bỏ cột `is_canceled` chống Data Leakage, dự đoán hàng loạt, xem bảng kết quả và xuất tệp CSV kết quả.
+4. **Model Comparison:** So sánh trực quan 6 mô hình thực nghiệm (Accuracy, Precision, Recall, F1-Score, ROC-AUC), Ma trận nhầm lẫn (Confusion Matrix) tương tác.
+5. **Data Explorer:** Khám phá cấu trúc dữ liệu, phân tích tỷ lệ khuyết thiếu (Missing values: company 94.3%, agent 13.7%), bảng xem trước dữ liệu gốc.
+6. **Error Analysis:** Phân tích chẩn đoán False Positive (FP) và False Negative (FN), phân tích chi phí kinh doanh khách sạn và bảng lọc các trường hợp đoán sai.
+
+### 🚀 Cách Khởi Chạy Website Demo
+
+#### Cách 1: Khởi chạy tự động bằng 1 lệnh duy nhất
+```powershell
+python run_app.py
+```
+*Script sẽ tự động khởi động Backend FastAPI (Port 8000), Frontend React (Port 5173) và tự động mở trình duyệt web.*
+
+#### Cách 2: Khởi chạy từng phần thủ công
+1. **Khởi động FastAPI Backend:**
+   ```powershell
+   uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+   ```
+   *Kiểm tra Swagger UI API tại:* `http://localhost:8000/docs`
+
+2. **Khởi động React + Vite Frontend:**
+   ```powershell
+   cd frontend
+   npm run dev
+   ```
+   *Truy cập Website Demo tại:* `http://localhost:5173`

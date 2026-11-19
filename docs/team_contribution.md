@@ -8,7 +8,7 @@
 | STT | Họ và Tên | Mã sinh viên | Vai trò chính | Email liên hệ |
 |:---:|:---|:---:|:---|:---|
 | 1 | Nguyễn Anh Đức | 1871020148 | Data Analyst / EDA Specialist | *[Điền Email]* |
-| 2 | Lưu Phương Thảo | *[Điền MSSV]* | Preprocessing & ML Engineer | *[Điền Email]* |
+| 2 | Lưu Phương Thảo | 1871020681 | Preprocessing & ML Engineer | *[Điền Email]* |
 | 3 | Lê Hoàng Nam | 1871020417 | Evaluation, Error Analysis & Reporter | *[Điền Email]* |
 
 ---

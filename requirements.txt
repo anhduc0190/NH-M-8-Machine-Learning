@@ -17,3 +17,8 @@ pytest>=7.4.0
 
 # Optional GUI & Interactive Exploration
 streamlit>=1.30.0
+
+# Web Demo Backend
+fastapi>=0.110.0
+uvicorn>=0.28.0
+python-multipart>=0.0.9
