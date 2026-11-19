@@ -209,7 +209,7 @@ Bảng số liệu thực nghiệm thu được từ quá trình đánh giá kh�
 
 ## 15. THÀNH VIÊN NHÓM VÀ LIÊN HỆ
 - **Thành viên 1:** Nguyễn Anh Đức - 1871020148 - Phụ trách Khám phá & Trực quan hóa Dữ liệu (EDA)
-- **Thành viên 2:** Lưu Phương Thảo - *[MSSV]* - Phụ trách Tiền xử lý, Kỹ thuật đặc trưng & Huấn luyện mô hình
+- **Thành viên 2:** Lưu Phương Thảo - 1871020681 - Phụ trách Tiền xử lý, Kỹ thuật đặc trưng & Huấn luyện mô hình
 - **Thành viên 3:** Lê Hoàng Nam - 1871020417 - Phụ trách Đánh giá mô hình, Phân tích lỗi & Báo cáo khoa học
 
 ---
